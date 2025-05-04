@@ -1,6 +1,7 @@
 import pygame
 import game_class
 import os
+import math
 
 pygame.init()
 
@@ -31,7 +32,6 @@ PlayerCharacter.rect.x = WIDTH / 2 - PlayerCharacter.width / 2
 PlayerCharacter.rect.y = HEIGHT / 1.5
 EnemyCharacter = game_class.Enemy(image=EnemyCharacterImage)
 EnemyCharacter.rect.x = WIDTH / 2 - EnemyCharacter.width / 2
-EnemyCharacter.rect.y = HEIGHT / 7
 Border = game_class.Border(image=BorderImage)
 Border.rect.x = WIDTH / 2 - Border.width / 2
 Border.rect.y = HEIGHT / 2
@@ -44,6 +44,7 @@ running = True
 while running:
     DeltaTime = Clock.tick(120)
     PlayerCharacter.movement_update(slippery = 0.8)
+    EnemyCharacter.rect.y = HEIGHT / 7 - math.sin(pygame.time.get_ticks() / 500) * 30
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
