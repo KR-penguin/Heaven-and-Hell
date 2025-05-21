@@ -2,6 +2,9 @@ import pygame
 import game_class
 import os
 import math
+import time
+from package.pyvidplayer import Video
+
 
 pygame.init()
 
@@ -10,7 +13,6 @@ Screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Heaven and Hell")
 
 Clock = pygame.time.Clock()
-Font = pygame.font.SysFont("comicsans", 30)
 
 # load images
 BasicImagePath = os.path.abspath('.') + '/' + "source/image/"
@@ -21,10 +23,10 @@ EnemyCharacterImage = pygame.transform.scale(EnemyCharacterImage, (EnemyCharacte
 BorderImage = pygame.image.load(BasicImagePath + "border.png").convert_alpha()
 BorderImage = pygame.transform.scale(BorderImage, (BorderImage.get_rect().size[0] / 3, BorderImage.get_rect().size[1] / 3))
 
-# load sounds
-BasicSoundPath = os.path.abspath('.') + '/' + "source/sound/"
-BackgroundMusic = pygame.mixer.Sound(BasicSoundPath + "bgm.mp3")
-BackgroundMusic.set_volume(0.5)
+# load video
+BasicVideoPath = os.path.abspath('.') + '/' + "source/video/"
+BackgroundVideo = Video(BasicVideoPath + "HAH.mov")
+BackgroundVideo.set_size((WIDTH, HEIGHT))
 
 # create instances
 PlayerCharacter = game_class.Player(speed=4, image=PlayerCharacterImage)
@@ -37,14 +39,19 @@ Border.rect.x = WIDTH / 2 - Border.width / 2
 Border.rect.y = HEIGHT / 2
 
 # begin play
-BackgroundMusic.play(-1) # Loop the background music
+BackgroundVideo.set_volume(0.5)
 
 # game loop
 running = True
 while running:
-    DeltaTime = Clock.tick(120)
+    # system loop
+    Clock.tick(120) # set frame
+    DeltaTime = pygame.time.get_ticks() / 1000
+
+    # update
     PlayerCharacter.movement_update(slippery = 0.8)
-    EnemyCharacter.rect.y = HEIGHT / 7 - math.sin(pygame.time.get_ticks() / 500) * 30
+    EnemyCharacter.rect.y = HEIGHT / 7 - math.sin(DeltaTime * 2) * 30
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,15 +62,19 @@ while running:
         PlayerCharacter.move("left")
     if keys[pygame.K_d] and PlayerCharacter.rect.right < Border.rect.right + 20:
         PlayerCharacter.move("right")
-    if keys[pygame.K_w] and PlayerCharacter.rect.top > Border.rect.top:
-        PlayerCharacter.move("up")
+    if keys[pygame.K_w] and PlayerCharacter.rect.top > Border.rect.top:        PlayerCharacter.move("up")
     if keys[pygame.K_s] and PlayerCharacter.rect.bottom < Border.rect.bottom:
         PlayerCharacter.move("down")
+    if keys[pygame.K_q]:
+        pygame.quit()
 
     # Update display
     pygame.display.flip()
     Screen.fill((0, 0, 0))
+    BackgroundVideo.draw(Screen, (0, 0))
     Screen.blit(PlayerCharacter.image, (PlayerCharacter.rect.x, PlayerCharacter.rect.y))
     Screen.blit(EnemyCharacter.image, (EnemyCharacter.rect.x, EnemyCharacter.rect.y))
     Screen.blit(Border.image, (Border.rect.x, Border.rect.y))
     pygame.display.update()
+
+pygame.quit()

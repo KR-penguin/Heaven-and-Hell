@@ -1,6 +1,10 @@
 import pygame
 import sys
 
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+
+
 class Player:
     def __init__(self, speed, image : pygame.Surface):
         self.width = image.get_rect().size[0]
